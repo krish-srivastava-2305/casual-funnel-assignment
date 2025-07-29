@@ -1,103 +1,130 @@
-import Image from "next/image";
+'use client'
+import Button from "@/components/ui/button";
+import Input from "@/components/ui/input";
+import { useQuizContext } from "@/context/QuixContext";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { userEmail, setUserEmail } = useQuizContext();
+  const [error, setError] = useState<string>("");
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const navigator = () => {
+    if (!userEmail.trim()) {
+      setError("Please enter your email address");
+      return;
+    }
+    if (!validateEmail(userEmail)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+    setError("");
+    router.push("/questions");
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-full">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse-custom"></div>
+        <div className="absolute top-40 right-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse-custom" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute -bottom-8 left-40 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse-custom" style={{ animationDelay: '2s' }}></div>
+      </div>
+
+      <div className="relative z-10 container mx-auto px-6 py-12">
+        {/* Header Section */}
+        <div className="text-center mb-16 animate-fadeIn">
+          <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-6 animate-scaleIn">
+            🧠 Quiz Master
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+            Challenge your mind with our interactive quiz experience. Test your knowledge across various topics and track your progress!
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Instructions Section */}
+        <div className="max-w-4xl mx-auto mb-12 animate-fadeIn" style={{ animationDelay: '0.4s' }}>
+          <div className="glass rounded-3xl p-8 hover-lift">
+            <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+              📋 How It Works
+            </h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="text-center p-6 rounded-2xl bg-white/50 backdrop-blur-sm border border-white/20 hover-lift">
+                <div className="text-4xl mb-4">✉️</div>
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">Enter Your Email</h3>
+                <p className="text-gray-600">Provide your email to save your progress and receive results</p>
+              </div>
+              <div className="text-center p-6 rounded-2xl bg-white/50 backdrop-blur-sm border border-white/20 hover-lift" style={{ animationDelay: '0.2s' }}>
+                <div className="text-4xl mb-4">🎯</div>
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">Answer Questions</h3>
+                <p className="text-gray-600">Navigate through 15 carefully curated questions at your own pace</p>
+              </div>
+              <div className="text-center p-6 rounded-2xl bg-white/50 backdrop-blur-sm border border-white/20 hover-lift" style={{ animationDelay: '0.4s' }}>
+                <div className="text-4xl mb-4">🏆</div>
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">Get Results</h3>
+                <p className="text-gray-600">Review your answers and see your final score with detailed feedback</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Input Section */}
+        <div className="max-w-md mx-auto animate-fadeIn" style={{ animationDelay: '0.6s' }}>
+          <div className="glass rounded-3xl p-8 hover-lift">
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">Ready to Begin?</h3>
+              <p className="text-gray-600">Enter your email address to start the quiz</p>
+            </div>
+
+            <div className="space-y-4">
+              <Input
+                placeholder="your.email@example.com"
+                type="email"
+                setUserEmail={setUserEmail}
+                label="Email Address"
+                error={error}
+                className="animate-scaleIn"
+              />
+
+              <Button
+                text="🚀 Start Quiz"
+                navigator={navigator}
+                variant="primary"
+                size="lg"
+                className="w-full animate-scaleIn"
+              />
+            </div>
+
+            <div className="mt-6 text-center text-sm text-gray-500">
+              <p>💡 Tips: Take your time, read carefully, and trust your instincts!</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Features Section */}
+        <div className="max-w-6xl mx-auto mt-16 animate-fadeIn" style={{ animationDelay: '0.8s' }}>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: "⚡", title: "Quick & Easy", desc: "Streamlined interface for smooth experience" },
+              { icon: "📊", title: "Progress Tracking", desc: "See your advancement in real-time" },
+              { icon: "🎨", title: "Beautiful Design", desc: "Modern UI with smooth animations" },
+              { icon: "📱", title: "Mobile Friendly", desc: "Perfect on any device, anywhere" }
+            ].map((feature, index) => (
+              <div key={index} className="text-center p-6 rounded-2xl bg-white/30 backdrop-blur-sm border border-white/20 hover-lift">
+                <div className="text-3xl mb-3">{feature.icon}</div>
+                <h4 className="font-semibold text-gray-800 mb-2">{feature.title}</h4>
+                <p className="text-sm text-gray-600">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
