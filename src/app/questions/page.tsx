@@ -209,141 +209,163 @@ export default function QuestionsPage() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header with Final Submit Button */}
-            <div className="bg-white border-b border-gray-200 p-4 animate-slideIn">
-                <div className="max-w-7xl mx-auto flex justify-between items-center">
-                    <div>
-                        <h1 className="text-2xl font-light text-gray-900">Quiz in Progress</h1>
-                        <p className="text-gray-600 font-light">Welcome back, {userEmail}</p>
-                    </div>
-                    <div className="flex items-center gap-6">
-                        {/* Timer */}
-                        <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-4 py-2">
-                            <span className="text-lg">⏰</span>
-                            <div className="text-right">
-                                <div className={`text-lg font-medium ${getTimerColor()}`}>
-                                    {formatTime(timeRemaining)}
+            <div className="bg-white border-b border-gray-200 p-3 sm:p-4 animate-slideIn">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-6">
+                        <div className="flex-1 min-w-0">
+                            <h1 className="text-xl sm:text-2xl font-light text-gray-900 truncate">Quiz in Progress</h1>
+                            <p className="text-sm sm:text-base text-gray-600 font-light truncate">Welcome back, {userEmail}</p>
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 w-full sm:w-auto">
+                            {/* Timer */}
+                            <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2 sm:px-4 w-full sm:w-auto">
+                                <span className="text-base sm:text-lg">⏰</span>
+                                <div className="text-right flex-1 sm:flex-none">
+                                    <div className={`text-base sm:text-lg font-medium ${getTimerColor()}`}>
+                                        {formatTime(timeRemaining)}
+                                    </div>
+                                    <div className="text-xs text-gray-500">Time Remaining</div>
                                 </div>
-                                <div className="text-xs text-gray-500">Time Remaining</div>
                             </div>
-                        </div>
 
-                        <div className="text-sm text-gray-600 font-light">
-                            Progress: {answeredQuestions}/{totalQuestions} answered
+                            <div className="text-xs sm:text-sm text-gray-600 font-light text-center sm:text-left">
+                                Progress: {answeredQuestions}/{totalQuestions} answered
+                            </div>
+                            <Button
+                                text="Submit Quiz"
+                                navigator={handleSubmitQuiz}
+                                variant="success"
+                                disabled={answeredQuestions < totalQuestions}
+                                size="sm"
+                                className="w-full sm:w-auto"
+                            />
                         </div>
-                        <Button
-                            text="Submit Quiz"
-                            navigator={handleSubmitQuiz}
-                            variant="success"
-                            disabled={answeredQuestions < totalQuestions}
-                        />
                     </div>
                 </div>
             </div>
 
-            <div className="flex">
-                {/* Sidebar */}
-                <div className="w-80 bg-white border-r border-gray-200 min-h-screen p-6 animate-slideIn">
-                    <div className="mb-6">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Question Navigation</h3>
-                        <div className="grid grid-cols-5 gap-2">
-                            {questions.map((question: Question, index: number) => (
-                                <button
-                                    key={question.id}
-                                    onClick={() => handleGoToQuestion(index)}
-                                    className={`
-                                        w-10 h-10 rounded-lg font-medium text-sm transition-all duration-300 transform hover:scale-110
-                                        ${index === currentQuestionIndex
-                                            ? 'bg-gray-900 text-white shadow-sm'
-                                            : question.userAnswer
-                                                ? 'bg-gray-300 text-gray-900'
-                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                        }
-                                    `}
-                                >
-                                    {index + 1}
-                                </button>
-                            ))}
-                        </div>
+            <div className="flex flex-col lg:flex-row">
+                {/* Sidebar - Hidden on mobile by default, collapsible */}
+                <div className="lg:w-80 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 lg:min-h-screen animate-slideIn">
+                    {/* Mobile Navigation Toggle */}
+                    <div className="lg:hidden p-4 border-b border-gray-200">
+                        <button
+                            onClick={() => {
+                                const sidebar = document.getElementById('question-navigation');
+                                if (sidebar) {
+                                    sidebar.classList.toggle('hidden');
+                                }
+                            }}
+                            className="w-full flex items-center justify-between text-left px-4 py-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                        >
+                            <span className="font-medium text-gray-900">Question Navigation</span>
+                            <span className="text-gray-500">▼</span>
+                        </button>
                     </div>
 
-                    <div className="mb-6">
-                        <div className="bg-gray-50 rounded-lg p-4">
-                            <h4 className="font-medium text-gray-900 mb-2">Progress Stats</h4>
-                            <div className="space-y-2 text-sm font-light">
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Current:</span>
-                                    <span className="font-medium">{currentQuestionIndex + 1}/{totalQuestions}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Answered:</span>
-                                    <span className="font-medium text-green-600">{answeredQuestions}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Remaining:</span>
-                                    <span className="font-medium text-orange-600">{totalQuestions - answeredQuestions}</span>
-                                </div>
+                    <div id="question-navigation" className="hidden lg:block p-4 sm:p-6">
+                        <div className="mb-4 sm:mb-6">
+                            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4 lg:block hidden">Question Navigation</h3>
+                            <div className="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-5 gap-2">
+                                {questions.map((question: Question, index: number) => (
+                                    <button
+                                        key={question.id}
+                                        onClick={() => handleGoToQuestion(index)}
+                                        className={`
+                                            w-8 h-8 sm:w-10 sm:h-10 rounded-lg font-medium text-xs sm:text-sm transition-all duration-300 transform hover:scale-110
+                                            ${index === currentQuestionIndex
+                                                ? 'bg-gray-900 text-white shadow-sm'
+                                                : question.userAnswer
+                                                    ? 'bg-gray-300 text-gray-900'
+                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                            }
+                                        `}
+                                    >
+                                        {index + 1}
+                                    </button>
+                                ))}
                             </div>
-                            <div className="mt-4">
-                                <div className="bg-gray-200 rounded-full h-2">
-                                    <div
-                                        className="bg-gray-900 h-2 rounded-full transition-all duration-300"
-                                        style={{ width: `${(answeredQuestions / totalQuestions) * 100}%` }}
-                                    ></div>
+                        </div>
+
+                        <div className="mb-4 sm:mb-6">
+                            <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
+                                <h4 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">Progress Stats</h4>
+                                <div className="space-y-2 text-xs sm:text-sm font-light">
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-600">Current:</span>
+                                        <span className="font-medium">{currentQuestionIndex + 1}/{totalQuestions}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-600">Answered:</span>
+                                        <span className="font-medium text-green-600">{answeredQuestions}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-600">Remaining:</span>
+                                        <span className="font-medium text-orange-600">{totalQuestions - answeredQuestions}</span>
+                                    </div>
+                                </div>
+                                <div className="mt-3 sm:mt-4">
+                                    <div className="bg-gray-200 rounded-full h-2">
+                                        <div
+                                            className="bg-gray-900 h-2 rounded-full transition-all duration-300"
+                                            style={{ width: `${(answeredQuestions / totalQuestions) * 100}%` }}
+                                        ></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="bg-gray-50 rounded-lg p-4">
-                        <h4 className="font-medium text-gray-900 mb-2">Tips</h4>
-                        <ul className="text-sm text-gray-600 space-y-1 font-light">
-                            <li>• Click numbers to jump to questions</li>
-                            <li>• Gray = answered, Black = current</li>
-                            <li>• You can change answers anytime</li>
-                            <li>• Submit when all questions answered</li>
-                        </ul>
+                        <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
+                            <h4 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">Tips</h4>
+                            <ul className="text-xs sm:text-sm text-gray-600 space-y-1 font-light">
+                                <li>• Click numbers to jump to questions</li>
+                                <li>• Gray = answered, Black = current</li>
+                                <li>• You can change answers anytime</li>
+                                <li>• Submit when all questions answered</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
                 {/* Main Question Area */}
-                <div className="flex-1 p-6">
+                <div className="flex-1 p-3 sm:p-4 lg:p-6">
                     <div className="max-w-4xl mx-auto">
-                        <div className={`bg-white rounded-xl p-8 shadow-sm border border-gray-200 transition-all duration-300 ${isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
+                        <div className={`bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200 transition-all duration-300 ${isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
                             {/* Question Header */}
-                            <div className="mb-8">
-                                <div className="flex items-center justify-between mb-4">
-                                    <span className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                            <div className="mb-6 sm:mb-8">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2">
+                                    <span className="text-xs sm:text-sm font-medium text-gray-600 bg-gray-100 px-2 sm:px-3 py-1 rounded-full w-fit">
                                         Question {currentQuestionIndex + 1} of {totalQuestions}
                                     </span>
                                     {currentQuestion?.userAnswer && (
-                                        <span className="text-sm font-medium text-green-600 bg-green-100 px-3 py-1 rounded-full">
+                                        <span className="text-xs sm:text-sm font-medium text-green-600 bg-green-100 px-2 sm:px-3 py-1 rounded-full w-fit">
                                             ✓ Answered
                                         </span>
                                     )}
                                 </div>
                                 <h2
-                                    className="text-2xl md:text-3xl font-light text-gray-900 leading-relaxed"
+                                    className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-light text-gray-900 leading-relaxed"
                                     dangerouslySetInnerHTML={{ __html: currentQuestion?.question || '' }}
                                 />
                             </div>
 
                             {/* Answer Options */}
-                            <div className="space-y-4 mb-8">
+                            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                                 {currentQuestion?.options.map((option: string, index: number) => (
                                     <button
                                         key={index}
                                         onClick={() => handleAnswerSelect(option)}
                                         className={`
-                                            w-full p-6 rounded-lg text-left transition-all duration-300 transform hover:scale-[1.01] hover:shadow-sm
+                                            w-full p-4 sm:p-5 lg:p-6 rounded-lg text-left transition-all duration-300 transform hover:scale-[1.01] hover:shadow-sm
                                             ${currentQuestion.userAnswer === option
                                                 ? 'bg-gray-900 text-white shadow-sm'
                                                 : 'bg-gray-50 text-gray-900 hover:bg-gray-100 border border-gray-200'
                                             }
                                         `}
                                     >
-                                        <div className="flex items-center">
+                                        <div className="flex items-start sm:items-center">
                                             <div className={`
-                                                w-6 h-6 rounded-full border mr-4 flex items-center justify-center text-sm font-medium
+                                                w-5 h-5 sm:w-6 sm:h-6 rounded-full border mr-3 sm:mr-4 flex items-center justify-center text-xs sm:text-sm font-medium flex-shrink-0 mt-0.5 sm:mt-0
                                                 ${currentQuestion.userAnswer === option
                                                     ? 'border-white bg-white text-gray-900'
                                                     : 'border-gray-300'
@@ -351,35 +373,41 @@ export default function QuestionsPage() {
                                             `}>
                                                 {String.fromCharCode(65 + index)}
                                             </div>
-                                            <span dangerouslySetInnerHTML={{ __html: option }} />
+                                            <span className="text-sm sm:text-base" dangerouslySetInnerHTML={{ __html: option }} />
                                         </div>
                                     </button>
                                 ))}
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="flex flex-wrap gap-4 justify-between items-center">
-                                <div className="flex gap-3">
+                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-stretch sm:items-center">
+                                <div className="flex gap-3 order-2 sm:order-1">
                                     <Button
                                         text="← Previous"
                                         navigator={handlePrevious}
                                         variant="outline"
                                         disabled={currentQuestionIndex === 0}
+                                        size="sm"
+                                        className="flex-1 sm:flex-none"
                                     />
                                     <Button
                                         text="Next →"
                                         navigator={handleNext}
                                         variant="primary"
                                         disabled={currentQuestionIndex === totalQuestions - 1}
+                                        size="sm"
+                                        className="flex-1 sm:flex-none"
                                     />
                                 </div>
 
-                                <div className="flex gap-3">
+                                <div className="flex gap-3 order-1 sm:order-2">
                                     {currentQuestion?.userAnswer && (
                                         <Button
                                             text="Clear Answer"
                                             navigator={handleClearAnswer}
                                             variant="outline"
+                                            size="sm"
+                                            className="flex-1 sm:flex-none"
                                         />
                                     )}
                                     <Button
@@ -387,6 +415,8 @@ export default function QuestionsPage() {
                                         navigator={handleNext}
                                         variant="success"
                                         disabled={!currentQuestion?.userAnswer}
+                                        size="sm"
+                                        className="flex-1 sm:flex-none"
                                     />
                                 </div>
                             </div>

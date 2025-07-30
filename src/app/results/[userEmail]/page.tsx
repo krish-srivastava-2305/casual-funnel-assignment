@@ -54,53 +54,53 @@ export default function ResultsPage() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="bg-white border-b border-gray-200 p-6 animate-slideIn">
+            <div className="bg-white border-b border-gray-200 p-4 sm:p-6 animate-slideIn">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center">
-                        <h1 className="text-4xl font-light text-gray-900 mb-2">
+                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-light text-gray-900 mb-2">
                             Quiz Results
                         </h1>
-                        <p className="text-gray-600 font-light">Detailed analysis of your performance</p>
+                        <p className="text-sm sm:text-base text-gray-600 font-light">Detailed analysis of your performance</p>
                     </div>
                 </div>
             </div>
 
-            <div className="max-w-6xl mx-auto p-6">
+            <div className="max-w-6xl mx-auto p-3 sm:p-4 lg:p-6">
                 {/* Score Summary */}
-                <div className="bg-white rounded-xl p-8 mb-8 text-center shadow-sm border border-gray-200 animate-scaleIn">
-                    <div className="text-6xl mb-4">{getScoreEmoji(quizResult.score)}</div>
-                    <h2 className="text-3xl font-light text-gray-900 mb-4">
-                        Congratulations, {quizResult.userEmail}!
+                <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8 text-center shadow-sm border border-gray-200 animate-scaleIn">
+                    <div className="text-4xl sm:text-5xl lg:text-6xl mb-3 sm:mb-4">{getScoreEmoji(quizResult.score)}</div>
+                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-light text-gray-900 mb-3 sm:mb-4 px-2">
+                        Congratulations, <span className="break-words">{quizResult.userEmail}</span>!
                     </h2>
 
-                    <div className="grid md:grid-cols-4 gap-6 mb-8">
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <div className={`text-4xl font-light mb-2 ${getScoreColor(quizResult.score)}`}>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+                        <div className="bg-gray-50 rounded-lg p-3 sm:p-4 lg:p-6">
+                            <div className={`text-2xl sm:text-3xl lg:text-4xl font-light mb-1 sm:mb-2 ${getScoreColor(quizResult.score)}`}>
                                 {quizResult.score}%
                             </div>
-                            <p className="text-gray-600 font-light">Final Score</p>
+                            <p className="text-xs sm:text-sm lg:text-base text-gray-600 font-light">Final Score</p>
                         </div>
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <div className="text-4xl font-light text-green-600 mb-2">
+                        <div className="bg-gray-50 rounded-lg p-3 sm:p-4 lg:p-6">
+                            <div className="text-2xl sm:text-3xl lg:text-4xl font-light text-green-600 mb-1 sm:mb-2">
                                 {quizResult.correctAnswers}
                             </div>
-                            <p className="text-gray-600 font-light">Correct Answers</p>
+                            <p className="text-xs sm:text-sm lg:text-base text-gray-600 font-light">Correct Answers</p>
                         </div>
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <div className="text-4xl font-light text-red-600 mb-2">
+                        <div className="bg-gray-50 rounded-lg p-3 sm:p-4 lg:p-6">
+                            <div className="text-2xl sm:text-3xl lg:text-4xl font-light text-red-600 mb-1 sm:mb-2">
                                 {quizResult.totalQuestions - quizResult.correctAnswers}
                             </div>
-                            <p className="text-gray-600 font-light">Incorrect Answers</p>
+                            <p className="text-xs sm:text-sm lg:text-base text-gray-600 font-light">Incorrect Answers</p>
                         </div>
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <div className="text-4xl font-light text-gray-900 mb-2">
+                        <div className="bg-gray-50 rounded-lg p-3 sm:p-4 lg:p-6 col-span-2 lg:col-span-1">
+                            <div className="text-2xl sm:text-3xl lg:text-4xl font-light text-gray-900 mb-1 sm:mb-2">
                                 {formatTime(quizResult.timeSpent)}
                             </div>
-                            <p className="text-gray-600 font-light">Time Taken</p>
+                            <p className="text-xs sm:text-sm lg:text-base text-gray-600 font-light">Time Taken</p>
                         </div>
                     </div>
 
-                    <div className="flex gap-4 justify-center">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                         <Button
                             text="View Detailed Analysis"
                             navigator={() => {
@@ -108,44 +108,46 @@ export default function ResultsPage() {
                                 element?.scrollIntoView({ behavior: 'smooth' });
                             }}
                             variant="outline"
+                            className="w-full sm:w-auto"
                         />
                         <Button
                             text="Retake Quiz"
                             navigator={handleRetakeQuiz}
                             variant="primary"
+                            className="w-full sm:w-auto"
                         />
                     </div>
                 </div>
 
                 {/* Detailed Question Analysis */}
                 <div id="detailed-results" className="animate-fadeIn" style={{ animationDelay: '0.3s' }}>
-                    <h3 className="text-2xl font-light text-gray-900 mb-6 text-center">
+                    <h3 className="text-xl sm:text-2xl font-light text-gray-900 mb-4 sm:mb-6 text-center">
                         Detailed Question Analysis
                     </h3>
 
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6">
                         {quizResult.questions.map((question: Question, index: number) => {
                             const isCorrect = question.userAnswer === question.correctAnswer;
                             const wasAnswered = question.userAnswer !== undefined;
 
                             return (
-                                <div key={question.id} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                                <div key={question.id} className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200">
                                     {/* Question Header */}
-                                    <div className="flex items-center justify-between mb-4">
-                                        <span className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2">
+                                        <span className="text-xs sm:text-sm font-medium text-gray-600 bg-gray-100 px-2 sm:px-3 py-1 rounded-full w-fit">
                                             Question {index + 1}
                                         </span>
                                         <div className="flex items-center gap-2">
                                             {isCorrect ? (
-                                                <span className="text-sm font-medium text-green-600 bg-green-100 px-3 py-1 rounded-full">
+                                                <span className="text-xs sm:text-sm font-medium text-green-600 bg-green-100 px-2 sm:px-3 py-1 rounded-full">
                                                     ✓ Correct
                                                 </span>
                                             ) : wasAnswered ? (
-                                                <span className="text-sm font-medium text-red-600 bg-red-100 px-3 py-1 rounded-full">
+                                                <span className="text-xs sm:text-sm font-medium text-red-600 bg-red-100 px-2 sm:px-3 py-1 rounded-full">
                                                     ✗ Incorrect
                                                 </span>
                                             ) : (
-                                                <span className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                                                <span className="text-xs sm:text-sm font-medium text-gray-600 bg-gray-100 px-2 sm:px-3 py-1 rounded-full">
                                                     → Skipped
                                                 </span>
                                             )}
@@ -154,18 +156,18 @@ export default function ResultsPage() {
 
                                     {/* Question Text */}
                                     <h4
-                                        className="text-lg font-medium text-gray-900 mb-4 leading-relaxed"
+                                        className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4 leading-relaxed"
                                         dangerouslySetInnerHTML={{ __html: question.question }}
                                     />
 
                                     {/* Answer Options */}
-                                    <div className="space-y-3">
+                                    <div className="space-y-2 sm:space-y-3">
                                         {question.options.map((option: string, optionIndex: number) => {
                                             const isCorrectAnswer = option === question.correctAnswer;
                                             const isUserAnswer = option === question.userAnswer;
 
-                                            let optionClass = "p-4 rounded-lg border transition-all duration-300";
-                                            let iconClass = "w-6 h-6 rounded-full border mr-4 flex items-center justify-center text-sm font-medium";
+                                            let optionClass = "p-3 sm:p-4 rounded-lg border transition-all duration-300";
+                                            let iconClass = "w-5 h-5 sm:w-6 sm:h-6 rounded-full border mr-3 sm:mr-4 flex items-center justify-center text-xs sm:text-sm font-medium flex-shrink-0";
                                             let icon = String.fromCharCode(65 + optionIndex);
 
                                             if (isCorrectAnswer) {
@@ -183,21 +185,25 @@ export default function ResultsPage() {
 
                                             return (
                                                 <div key={optionIndex} className={optionClass}>
-                                                    <div className="flex items-center">
+                                                    <div className="flex items-start sm:items-center">
                                                         <div className={iconClass}>
                                                             {icon}
                                                         </div>
-                                                        <span dangerouslySetInnerHTML={{ __html: option }} />
-                                                        {isCorrectAnswer && (
-                                                            <span className="ml-auto text-green-600 font-medium">
-                                                                Correct Answer
-                                                            </span>
-                                                        )}
-                                                        {isUserAnswer && !isCorrectAnswer && (
-                                                            <span className="ml-auto text-red-600 font-medium">
-                                                                Your Answer
-                                                            </span>
-                                                        )}
+                                                        <div className="flex-1 min-w-0">
+                                                            <span className="text-sm sm:text-base break-words" dangerouslySetInnerHTML={{ __html: option }} />
+                                                        </div>
+                                                        <div className="ml-2 flex-shrink-0">
+                                                            {isCorrectAnswer && (
+                                                                <span className="text-xs sm:text-sm text-green-600 font-medium">
+                                                                    Correct Answer
+                                                                </span>
+                                                            )}
+                                                            {isUserAnswer && !isCorrectAnswer && (
+                                                                <span className="text-xs sm:text-sm text-red-600 font-medium">
+                                                                    Your Answer
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             );
@@ -206,8 +212,8 @@ export default function ResultsPage() {
 
                                     {/* Answer Status */}
                                     {!wasAnswered && (
-                                        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                            <p className="text-yellow-800 text-sm font-light">
+                                        <div className="mt-3 sm:mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                            <p className="text-yellow-800 text-xs sm:text-sm font-light">
                                                 This question was not answered
                                             </p>
                                         </div>
@@ -219,28 +225,28 @@ export default function ResultsPage() {
                 </div>
 
                 {/* Performance Insights */}
-                <div className="mt-12 bg-white rounded-xl p-8 shadow-sm border border-gray-200 animate-fadeIn" style={{ animationDelay: '0.6s' }}>
-                    <h3 className="text-2xl font-light text-gray-900 mb-6 text-center">
+                <div className="mt-8 sm:mt-12 bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200 animate-fadeIn" style={{ animationDelay: '0.6s' }}>
+                    <h3 className="text-xl sm:text-2xl font-light text-gray-900 mb-4 sm:mb-6 text-center">
                         Performance Insights
                     </h3>
 
-                    <div className="grid md:grid-cols-2 gap-8">
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <h4 className="font-medium text-gray-900 mb-4">Score Analysis</h4>
-                            <div className="space-y-3 font-light">
-                                <div className="flex justify-between">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+                        <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                            <h4 className="font-medium text-gray-900 mb-3 sm:mb-4 text-sm sm:text-base">Score Analysis</h4>
+                            <div className="space-y-2 sm:space-y-3 font-light">
+                                <div className="flex justify-between text-sm sm:text-base">
                                     <span className="text-gray-600">Accuracy Rate:</span>
                                     <span className={`font-medium ${getScoreColor(quizResult.score)}`}>
                                         {quizResult.score}%
                                     </span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between text-sm sm:text-base">
                                     <span className="text-gray-600">Questions Attempted:</span>
                                     <span className="font-medium">
                                         {quizResult.questions.filter((q: Question) => q.userAnswer).length}/{quizResult.totalQuestions}
                                     </span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between text-sm sm:text-base">
                                     <span className="text-gray-600">Time per Question:</span>
                                     <span className="font-medium">
                                         {formatTime(Math.floor(quizResult.timeSpent / quizResult.totalQuestions))}
@@ -249,9 +255,9 @@ export default function ResultsPage() {
                             </div>
                         </div>
 
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <h4 className="font-medium text-gray-900 mb-4">Recommendations</h4>
-                            <div className="space-y-2 text-sm text-gray-600 font-light">
+                        <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                            <h4 className="font-medium text-gray-900 mb-3 sm:mb-4 text-sm sm:text-base">Recommendations</h4>
+                            <div className="space-y-2 text-xs sm:text-sm text-gray-600 font-light">
                                 {quizResult.score >= 90 ? (
                                     <>
                                         <p>Excellent performance! You have mastered this topic.</p>
@@ -275,17 +281,19 @@ export default function ResultsPage() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="mt-8 text-center">
-                    <div className="flex gap-4 justify-center">
+                <div className="mt-6 sm:mt-8 text-center">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                         <Button
                             text="Go Home"
                             navigator={() => router.push('/')}
                             variant="outline"
+                            className="w-full sm:w-auto"
                         />
                         <Button
                             text="Take Another Quiz"
                             navigator={handleRetakeQuiz}
                             variant="primary"
+                            className="w-full sm:w-auto"
                         />
                         <Button
                             text="Share Results"
@@ -302,6 +310,7 @@ export default function ResultsPage() {
                                 }
                             }}
                             variant="secondary"
+                            className="w-full sm:w-auto"
                         />
                     </div>
                 </div>

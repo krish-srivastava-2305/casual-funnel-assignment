@@ -138,3 +138,58 @@ html {
 ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, #111827, #374151);
 }
+
+/* Mobile-specific styles */
+@media (max-width: 640px) {
+
+    /* Improve touch targets */
+    button {
+        min-height: 44px;
+        /* iOS recommended minimum touch target */
+    }
+
+    /* Better text readability on mobile */
+    body {
+        -webkit-text-size-adjust: 100%;
+    }
+
+    /* Prevent zoom on input focus on iOS */
+    input[type="email"],
+    input[type="text"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="password"],
+    input[type="search"],
+    select,
+    textarea {
+        font-size: 16px;
+        /* Prevents zoom on iOS */
+    }
+}
+
+/* Enhanced mobile scrolling */
+* {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile navigation improvements */
+@media (max-width: 1024px) {
+    .mobile-hide {
+        display: none;
+    }
+
+    .mobile-show {
+        display: block;
+    }
+}
+
+@media (min-width: 1024px) {
+    .mobile-hide {
+        display: block;
+    }
+
+    .mobile-show {
+        display: none;
+    }
+}
