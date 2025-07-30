@@ -29,46 +29,47 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-full">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse-custom"></div>
-        <div className="absolute top-40 right-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse-custom" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute -bottom-8 left-40 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse-custom" style={{ animationDelay: '2s' }}></div>
+    <div className="min-h-screen bg-gray-50 relative overflow-hidden">
+      {/* Minimal background pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(0,0,0,0.15) 1px, transparent 0)',
+          backgroundSize: '20px 20px'
+        }}></div>
       </div>
 
       <div className="relative z-10 container mx-auto px-6 py-12">
         {/* Header Section */}
         <div className="text-center mb-16 animate-fadeIn">
-          <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-6 animate-scaleIn">
-            🧠 Quiz Master
+          <h1 className="text-6xl md:text-7xl font-light text-gray-900 mb-6 animate-scaleIn">
+            Quiz Platform
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-            Challenge your mind with our interactive quiz experience. Test your knowledge across various topics and track your progress!
+          <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed animate-fadeIn font-light" style={{ animationDelay: '0.2s' }}>
+            A clean and focused quiz experience. Test your knowledge with carefully curated questions.
           </p>
         </div>
 
         {/* Instructions Section */}
         <div className="max-w-4xl mx-auto mb-12 animate-fadeIn" style={{ animationDelay: '0.4s' }}>
-          <div className="glass rounded-3xl p-8 hover-lift">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-              📋 How It Works
+          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+            <h2 className="text-3xl font-light text-gray-900 mb-6 text-center">
+              How It Works
             </h2>
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="text-center p-6 rounded-2xl bg-white/50 backdrop-blur-sm border border-white/20 hover-lift">
-                <div className="text-4xl mb-4">✉️</div>
-                <h3 className="font-semibold text-lg mb-2 text-gray-800">Enter Your Email</h3>
-                <p className="text-gray-600">Provide your email to save your progress and receive results</p>
+              <div className="text-center p-6 rounded-lg border border-gray-100">
+                <div className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center text-white text-xl font-semibold mx-auto mb-4">1</div>
+                <h3 className="font-medium text-lg mb-2 text-gray-900">Enter Email</h3>
+                <p className="text-gray-600 font-light">Provide your email to save progress and receive results</p>
               </div>
-              <div className="text-center p-6 rounded-2xl bg-white/50 backdrop-blur-sm border border-white/20 hover-lift" style={{ animationDelay: '0.2s' }}>
-                <div className="text-4xl mb-4">🎯</div>
-                <h3 className="font-semibold text-lg mb-2 text-gray-800">Answer Questions</h3>
-                <p className="text-gray-600">Navigate through 15 carefully curated questions at your own pace</p>
+              <div className="text-center p-6 rounded-lg border border-gray-100">
+                <div className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center text-white text-xl font-semibold mx-auto mb-4">2</div>
+                <h3 className="font-medium text-lg mb-2 text-gray-900">Answer Questions</h3>
+                <p className="text-gray-600 font-light">Navigate through 15 questions at your own pace</p>
               </div>
-              <div className="text-center p-6 rounded-2xl bg-white/50 backdrop-blur-sm border border-white/20 hover-lift" style={{ animationDelay: '0.4s' }}>
-                <div className="text-4xl mb-4">🏆</div>
-                <h3 className="font-semibold text-lg mb-2 text-gray-800">Get Results</h3>
-                <p className="text-gray-600">Review your answers and see your final score with detailed feedback</p>
+              <div className="text-center p-6 rounded-lg border border-gray-100">
+                <div className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center text-white text-xl font-semibold mx-auto mb-4">3</div>
+                <h3 className="font-medium text-lg mb-2 text-gray-900">Get Results</h3>
+                <p className="text-gray-600 font-light">Review your answers and see your final score</p>
               </div>
             </div>
           </div>
@@ -76,10 +77,10 @@ export default function Home() {
 
         {/* Input Section */}
         <div className="max-w-md mx-auto animate-fadeIn" style={{ animationDelay: '0.6s' }}>
-          <div className="glass rounded-3xl p-8 hover-lift">
+          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
             <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">Ready to Begin?</h3>
-              <p className="text-gray-600">Enter your email address to start the quiz</p>
+              <h3 className="text-2xl font-light text-gray-900 mb-2">Ready to Begin?</h3>
+              <p className="text-gray-600 font-light">Enter your email address to start the quiz</p>
             </div>
 
             <div className="space-y-4">
@@ -93,7 +94,7 @@ export default function Home() {
               />
 
               <Button
-                text="🚀 Start Quiz"
+                text="Start Quiz"
                 navigator={navigator}
                 variant="primary"
                 size="lg"
@@ -101,8 +102,8 @@ export default function Home() {
               />
             </div>
 
-            <div className="mt-6 text-center text-sm text-gray-500">
-              <p>💡 Tips: Take your time, read carefully, and trust your instincts!</p>
+            <div className="mt-6 text-center text-sm text-gray-500 font-light">
+              <p>Take your time and trust your instincts</p>
             </div>
           </div>
         </div>
@@ -111,15 +112,15 @@ export default function Home() {
         <div className="max-w-6xl mx-auto mt-16 animate-fadeIn" style={{ animationDelay: '0.8s' }}>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: "⚡", title: "Quick & Easy", desc: "Streamlined interface for smooth experience" },
-              { icon: "📊", title: "Progress Tracking", desc: "See your advancement in real-time" },
-              { icon: "🎨", title: "Beautiful Design", desc: "Modern UI with smooth animations" },
-              { icon: "📱", title: "Mobile Friendly", desc: "Perfect on any device, anywhere" }
+              { title: "Quick & Easy", desc: "Streamlined interface for smooth experience" },
+              { title: "Progress Tracking", desc: "See your advancement in real-time" },
+              { title: "Clean Design", desc: "Modern UI with smooth animations" },
+              { title: "Mobile Friendly", desc: "Perfect on any device, anywhere" }
             ].map((feature, index) => (
-              <div key={index} className="text-center p-6 rounded-2xl bg-white/30 backdrop-blur-sm border border-white/20 hover-lift">
-                <div className="text-3xl mb-3">{feature.icon}</div>
-                <h4 className="font-semibold text-gray-800 mb-2">{feature.title}</h4>
-                <p className="text-sm text-gray-600">{feature.desc}</p>
+              <div key={index} className="text-center p-6 rounded-lg bg-white border border-gray-100">
+                <div className="w-8 h-8 bg-gray-900 rounded-full mx-auto mb-3"></div>
+                <h4 className="font-medium text-gray-900 mb-2">{feature.title}</h4>
+                <p className="text-sm text-gray-600 font-light">{feature.desc}</p>
               </div>
             ))}
           </div>

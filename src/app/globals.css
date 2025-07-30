@@ -2,11 +2,9 @@
 
 /* Custom animations and variables */
 :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --glass-bg: rgba(255, 255, 255, 0.25);
-    --glass-border: rgba(255, 255, 255, 0.18);
+    --primary-gradient: linear-gradient(135deg, #374151 0%, #111827 100%);
+    --secondary-gradient: linear-gradient(135deg, #6b7280 0%, #374151 100%);
+    --success-gradient: linear-gradient(135deg, #111827 0%, #374151 100%);
 }
 
 /* Smooth scrolling */
@@ -39,13 +37,30 @@ html {
 
 @keyframes scaleIn {
     from {
-        transform: scale(0.9);
+        transform: scale(0.95);
         opacity: 0;
     }
 
     to {
         transform: scale(1);
         opacity: 1;
+    }
+}
+
+@keyframes questionTransition {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    50% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -57,26 +72,8 @@ html {
     }
 
     50% {
-        transform: scale(1.05);
+        transform: scale(1.02);
     }
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-
-    100% {
-        background-position: 200% 0;
-    }
-}
-
-/* Glass morphism utility classes */
-.glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(16px);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
 /* Gradient backgrounds */
@@ -109,14 +106,18 @@ html {
     animation: pulse 2s ease-in-out infinite;
 }
 
+.animate-question-transition {
+    animation: questionTransition 0.3s ease-in-out;
+}
+
 /* Hover effects */
 .hover-lift {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .hover-lift:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* Custom scrollbar */
@@ -130,10 +131,10 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #374151, #111827);
     border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #764ba2, #667eea);
+    background: linear-gradient(135deg, #111827, #374151);
 }

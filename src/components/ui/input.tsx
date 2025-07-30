@@ -26,17 +26,16 @@ export default function Input({
                 <input
                     type={type}
                     placeholder={placeholder}
-                    className={`w-full px-6 py-4 bg-white/90 backdrop-blur-sm border-2 rounded-xl 
-            transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-500/25
+                    className={`w-full px-4 py-3 bg-white border rounded-lg 
+            transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-900/20
             ${error
                             ? 'border-red-400 focus:border-red-500'
-                            : 'border-gray-200 focus:border-purple-500 hover:border-purple-300'
+                            : 'border-gray-300 focus:border-gray-900 hover:border-gray-400'
                         }
-            placeholder-gray-400 text-gray-800 shadow-sm hover:shadow-md focus:shadow-lg
+            placeholder-gray-400 text-gray-900 shadow-sm hover:shadow-md focus:shadow-md
             animate-fadeIn`}
                     onChange={(e) => setUserEmail(e.target.value)}
                 />
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 opacity-0 transition-opacity duration-300 pointer-events-none hover:opacity-100"></div>
             </div>
             {error && (
                 <p className="mt-2 text-sm text-red-500 animate-fadeIn">{error}</p>

@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import type { Question, APIResponseType, QuizResult, QuizContextType } from "@/types";
 
 const QuizContext = createContext<QuizContextType | undefined>(undefined);
@@ -9,7 +9,7 @@ const QuizProvider = ({ children }: { children: React.ReactNode }) => {
     const [userEmail, setUserEmail] = useState<string>("");
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
-    const [timeRemaining, setTimeRemaining] = useState(30); // 30 minutes in seconds
+    const [timeRemaining, setTimeRemaining] = useState(30 * 60); // 30 minutes in seconds
     const [isTimerActive, setIsTimerActive] = useState(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const startTimeRef = useRef<Date | null>(null);
@@ -41,7 +41,6 @@ const QuizProvider = ({ children }: { children: React.ReactNode }) => {
                 setTimeRemaining(prev => {
                     if (prev <= 1) {
                         setIsTimerActive(false);
-                        // Auto-submit quiz when time runs out
                         autoSubmitQuiz();
                         return 0;
                     }
@@ -62,7 +61,7 @@ const QuizProvider = ({ children }: { children: React.ReactNode }) => {
         };
     }, [isTimerActive, timeRemaining, autoSubmitQuiz]);
 
-    const setFormattedQuestions = (questions: APIResponseType[]) => {
+    const setFormattedQuestions = useCallback((questions: APIResponseType[]) => {
         let questionId = 1;
         const formattedQuestions = questions.map(q => ({
             id: String(questionId++),
@@ -71,42 +70,46 @@ const QuizProvider = ({ children }: { children: React.ReactNode }) => {
             correctAnswer: q.correct_answer
         }));
         setQuestions(formattedQuestions);
-    };
+    }, []);
 
-    const setAnswers = (questionId: string, userAnswer: string) => {
-        if (questions) {
-            const updatedQuestions = questions.map(q =>
-                q.id === questionId ? { ...q, userAnswer } : q
-            );
-            setQuestions(updatedQuestions);
-        }
-    };
+    const setAnswers = useCallback((questionId: string, userAnswer: string) => {
+        setQuestions(prevQuestions => {
+            if (prevQuestions) {
+                return prevQuestions.map(q =>
+                    q.id === questionId ? { ...q, userAnswer } : q
+                );
+            }
+            return prevQuestions;
+        });
+    }, []);
 
-    const clearAnswer = (questionId: string) => {
-        if (questions) {
-            const updatedQuestions = questions.map(q =>
-                q.id === questionId ? { ...q, userAnswer: undefined } : q
-            );
-            setQuestions(updatedQuestions);
-        }
-    };
+    const clearAnswer = useCallback((questionId: string) => {
+        setQuestions(prevQuestions => {
+            if (prevQuestions) {
+                return prevQuestions.map(q =>
+                    q.id === questionId ? { ...q, userAnswer: undefined } : q
+                );
+            }
+            return prevQuestions;
+        });
+    }, []);
 
-    const goToQuestion = (index: number) => {
+    const goToQuestion = useCallback((index: number) => {
         if (questions && index >= 0 && index < questions.length) {
             setCurrentQuestionIndex(index);
         }
-    };
+    }, [questions]);
 
-    const startTimer = () => {
+    const startTimer = useCallback(() => {
         setIsTimerActive(true);
         startTimeRef.current = new Date();
-    };
+    }, []);
 
-    const stopTimer = () => {
+    const stopTimer = useCallback(() => {
         setIsTimerActive(false);
-    };
+    }, []);
 
-    const resetQuiz = () => {
+    const resetQuiz = useCallback(() => {
         setQuestions(null);
         setCurrentQuestionIndex(0);
         setQuizResult(null);
@@ -117,9 +120,9 @@ const QuizProvider = ({ children }: { children: React.ReactNode }) => {
             clearInterval(timerRef.current);
             timerRef.current = null;
         }
-    };
+    }, []);
 
-    const contextValue: QuizContextType = {
+    const contextValue: QuizContextType = useMemo(() => ({
         questions,
         userEmail,
         currentQuestionIndex,
@@ -135,7 +138,20 @@ const QuizProvider = ({ children }: { children: React.ReactNode }) => {
         startTimer,
         stopTimer,
         resetQuiz
-    };
+    }), [
+        questions,
+        userEmail,
+        currentQuestionIndex,
+        quizResult,
+        timeRemaining,
+        setFormattedQuestions,
+        setAnswers,
+        clearAnswer,
+        goToQuestion,
+        startTimer,
+        stopTimer,
+        resetQuiz
+    ]);
 
     return (
         <QuizContext.Provider value={contextValue}>

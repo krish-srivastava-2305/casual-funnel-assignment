@@ -1,6 +1,6 @@
 'use client';
 import { useQuizContext } from "@/context/QuixContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Button from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { sampleQuestions } from "@/sample/sample";
@@ -9,6 +9,8 @@ import { Question, QuizResult } from "@/types";
 export default function QuestionsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const hasFetchedRef = useRef(false);
 
     const {
         questions,
@@ -34,31 +36,56 @@ export default function QuestionsPage() {
             return;
         }
 
+        // Prevent fetching if questions already exist or if we've already fetched
+        if ((questions && questions.length > 0) || hasFetchedRef.current) {
+            setLoading(false);
+            return;
+        }
+
         const fetchQuestions = async () => {
             try {
+                hasFetchedRef.current = true; // Mark as fetched before the API call
                 setLoading(true);
                 setError(null);
-                // const response = await fetch("https://opentdb.com/api.php?amount=15");
-                // const data = await response.json();
-                // setFormattedQuestions(data.results);
+                const response = await fetch("https://opentdb.com/api.php?amount=15");
 
-                setFormattedQuestions(sampleQuestions);
+                if (!response.ok) {
+                    if (response.status === 429) {
+                        throw new Error("Too many requests. Using sample questions instead.");
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                setFormattedQuestions(data.results);
+
+                // setFormattedQuestions(sampleQuestions);
                 startTimer(); // Start the timer when questions are loaded
-            } catch {
-                setError("Failed to fetch questions. Please try again later.");
+            } catch (err) {
+                hasFetchedRef.current = false; // Reset flag on error so it can retry
+                const errorMessage = err instanceof Error ? err.message : "Failed to fetch questions. Please try again later.";
+
+                // Fallback to sample questions if API fails
+                if (err instanceof Error && err.message.includes("Too many requests")) {
+                    console.warn("API rate limited, using sample questions:", err);
+                    setFormattedQuestions(sampleQuestions);
+                    startTimer();
+                    hasFetchedRef.current = true; // Mark as successful
+                } else {
+                    setError(errorMessage);
+                    console.error("Failed to fetch questions:", err);
+                }
             } finally {
                 setLoading(false);
             }
         }
 
         fetchQuestions();
-    }, []);
-
-    // Redirect to results when quiz result is available
+    }, [userEmail, questions, router, setFormattedQuestions, startTimer]);
     useEffect(() => {
         if (quizResult) {
             stopTimer();
-            router.push('/results');
+            router.push(`/results/${userEmail}`);
         }
     }, [quizResult, router, stopTimer]);
 
@@ -80,13 +107,31 @@ export default function QuestionsPage() {
 
     const handleNext = () => {
         if (currentQuestionIndex < totalQuestions - 1) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
+            setIsTransitioning(true);
+            setTimeout(() => {
+                setCurrentQuestionIndex(currentQuestionIndex + 1);
+                setIsTransitioning(false);
+            }, 150);
         }
     };
 
     const handlePrevious = () => {
         if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex(currentQuestionIndex - 1);
+            setIsTransitioning(true);
+            setTimeout(() => {
+                setCurrentQuestionIndex(currentQuestionIndex - 1);
+                setIsTransitioning(false);
+            }, 150);
+        }
+    };
+
+    const handleGoToQuestion = (index: number) => {
+        if (index !== currentQuestionIndex) {
+            setIsTransitioning(true);
+            setTimeout(() => {
+                goToQuestion(index);
+                setIsTransitioning(false);
+            }, 150);
         }
     };
 
@@ -123,10 +168,10 @@ export default function QuestionsPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center">
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center animate-fadeIn">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4"></div>
-                    <p className="text-xl text-gray-600">Loading your quiz questions...</p>
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 mx-auto mb-4"></div>
+                    <p className="text-xl text-gray-600 font-light">Loading your quiz questions...</p>
                 </div>
             </div>
         );
@@ -134,12 +179,16 @@ export default function QuestionsPage() {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center">
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center animate-fadeIn">
-                    <div className="text-6xl mb-4">😞</div>
-                    <h2 className="text-2xl font-bold text-red-600 mb-4">Oops! Something went wrong</h2>
-                    <p className="text-gray-600 mb-6">{error}</p>
-                    <Button text="Try Again" navigator={() => window.location.reload()} variant="primary" />
+                    <div className="text-6xl mb-4">⚠</div>
+                    <h2 className="text-2xl font-medium text-red-600 mb-4">Something went wrong</h2>
+                    <p className="text-gray-600 mb-6 font-light">{error}</p>
+                    <Button text="Try Again" navigator={() => {
+                        hasFetchedRef.current = false;
+                        setError(null);
+                        window.location.reload();
+                    }} variant="primary" />
                 </div>
             </div>
         );
@@ -147,10 +196,10 @@ export default function QuestionsPage() {
 
     if (!questions || questions.length === 0) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center">
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center animate-fadeIn">
                     <div className="text-6xl mb-4">📝</div>
-                    <h2 className="text-2xl font-bold text-gray-600 mb-4">No questions available</h2>
+                    <h2 className="text-2xl font-medium text-gray-600 mb-4">No questions available</h2>
                     <Button text="Go Home" navigator={() => router.push('/')} variant="primary" />
                 </div>
             </div>
@@ -158,31 +207,31 @@ export default function QuestionsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
+        <div className="min-h-screen bg-gray-50">
             {/* Header with Final Submit Button */}
-            <div className="bg-white/80 backdrop-blur-sm border-b border-white/20 p-4 animate-slideIn">
+            <div className="bg-white border-b border-gray-200 p-4 animate-slideIn">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-800">Quiz in Progress</h1>
-                        <p className="text-gray-600">Welcome back, {userEmail}</p>
+                        <h1 className="text-2xl font-light text-gray-900">Quiz in Progress</h1>
+                        <p className="text-gray-600 font-light">Welcome back, {userEmail}</p>
                     </div>
                     <div className="flex items-center gap-6">
                         {/* Timer */}
-                        <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-2xl px-4 py-2">
-                            <span className="text-2xl">⏰</span>
+                        <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-4 py-2">
+                            <span className="text-lg">⏰</span>
                             <div className="text-right">
-                                <div className={`text-xl font-bold ${getTimerColor()}`}>
+                                <div className={`text-lg font-medium ${getTimerColor()}`}>
                                     {formatTime(timeRemaining)}
                                 </div>
                                 <div className="text-xs text-gray-500">Time Remaining</div>
                             </div>
                         </div>
 
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 font-light">
                             Progress: {answeredQuestions}/{totalQuestions} answered
                         </div>
                         <Button
-                            text="📋 Final Submit"
+                            text="Submit Quiz"
                             navigator={handleSubmitQuiz}
                             variant="success"
                             disabled={answeredQuestions < totalQuestions}
@@ -193,21 +242,21 @@ export default function QuestionsPage() {
 
             <div className="flex">
                 {/* Sidebar */}
-                <div className="w-80 bg-white/60 backdrop-blur-sm border-r border-white/20 min-h-screen p-6 animate-slideIn">
+                <div className="w-80 bg-white border-r border-gray-200 min-h-screen p-6 animate-slideIn">
                     <div className="mb-6">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4">📋 Question Navigation</h3>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Question Navigation</h3>
                         <div className="grid grid-cols-5 gap-2">
                             {questions.map((question: Question, index: number) => (
                                 <button
                                     key={question.id}
-                                    onClick={() => goToQuestion(index)}
+                                    onClick={() => handleGoToQuestion(index)}
                                     className={`
-                                        w-10 h-10 rounded-lg font-semibold text-sm transition-all duration-300 transform hover:scale-110
+                                        w-10 h-10 rounded-lg font-medium text-sm transition-all duration-300 transform hover:scale-110
                                         ${index === currentQuestionIndex
-                                            ? 'bg-purple-500 text-white shadow-lg'
+                                            ? 'bg-gray-900 text-white shadow-sm'
                                             : question.userAnswer
-                                                ? 'bg-green-400 text-white'
-                                                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                                ? 'bg-gray-300 text-gray-900'
+                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                         }
                                     `}
                                 >
@@ -218,26 +267,26 @@ export default function QuestionsPage() {
                     </div>
 
                     <div className="mb-6">
-                        <div className="bg-white/80 rounded-2xl p-4">
-                            <h4 className="font-semibold text-gray-800 mb-2">📊 Progress Stats</h4>
-                            <div className="space-y-2 text-sm">
+                        <div className="bg-gray-50 rounded-lg p-4">
+                            <h4 className="font-medium text-gray-900 mb-2">Progress Stats</h4>
+                            <div className="space-y-2 text-sm font-light">
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Current:</span>
-                                    <span className="font-semibold">{currentQuestionIndex + 1}/{totalQuestions}</span>
+                                    <span className="font-medium">{currentQuestionIndex + 1}/{totalQuestions}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Answered:</span>
-                                    <span className="font-semibold text-green-600">{answeredQuestions}</span>
+                                    <span className="font-medium text-green-600">{answeredQuestions}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Remaining:</span>
-                                    <span className="font-semibold text-orange-600">{totalQuestions - answeredQuestions}</span>
+                                    <span className="font-medium text-orange-600">{totalQuestions - answeredQuestions}</span>
                                 </div>
                             </div>
                             <div className="mt-4">
                                 <div className="bg-gray-200 rounded-full h-2">
                                     <div
-                                        className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
+                                        className="bg-gray-900 h-2 rounded-full transition-all duration-300"
                                         style={{ width: `${(answeredQuestions / totalQuestions) * 100}%` }}
                                     ></div>
                                 </div>
@@ -245,11 +294,11 @@ export default function QuestionsPage() {
                         </div>
                     </div>
 
-                    <div className="bg-white/80 rounded-2xl p-4">
-                        <h4 className="font-semibold text-gray-800 mb-2">💡 Tips</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
+                    <div className="bg-gray-50 rounded-lg p-4">
+                        <h4 className="font-medium text-gray-900 mb-2">Tips</h4>
+                        <ul className="text-sm text-gray-600 space-y-1 font-light">
                             <li>• Click numbers to jump to questions</li>
-                            <li>• Green = answered, Purple = current</li>
+                            <li>• Gray = answered, Black = current</li>
                             <li>• You can change answers anytime</li>
                             <li>• Submit when all questions answered</li>
                         </ul>
@@ -259,21 +308,21 @@ export default function QuestionsPage() {
                 {/* Main Question Area */}
                 <div className="flex-1 p-6">
                     <div className="max-w-4xl mx-auto">
-                        <div className="glass rounded-3xl p-8 animate-fadeIn">
+                        <div className={`bg-white rounded-xl p-8 shadow-sm border border-gray-200 transition-all duration-300 ${isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
                             {/* Question Header */}
                             <div className="mb-8">
                                 <div className="flex items-center justify-between mb-4">
-                                    <span className="text-sm font-medium text-purple-600 bg-purple-100 px-3 py-1 rounded-full">
+                                    <span className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                                         Question {currentQuestionIndex + 1} of {totalQuestions}
                                     </span>
                                     {currentQuestion?.userAnswer && (
                                         <span className="text-sm font-medium text-green-600 bg-green-100 px-3 py-1 rounded-full">
-                                            ✅ Answered
+                                            ✓ Answered
                                         </span>
                                     )}
                                 </div>
                                 <h2
-                                    className="text-2xl md:text-3xl font-bold text-gray-800 leading-relaxed"
+                                    className="text-2xl md:text-3xl font-light text-gray-900 leading-relaxed"
                                     dangerouslySetInnerHTML={{ __html: currentQuestion?.question || '' }}
                                 />
                             </div>
@@ -285,18 +334,18 @@ export default function QuestionsPage() {
                                         key={index}
                                         onClick={() => handleAnswerSelect(option)}
                                         className={`
-                                            w-full p-6 rounded-2xl text-left transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg
+                                            w-full p-6 rounded-lg text-left transition-all duration-300 transform hover:scale-[1.01] hover:shadow-sm
                                             ${currentQuestion.userAnswer === option
-                                                ? 'bg-purple-500 text-white shadow-lg'
-                                                : 'bg-white/80 text-gray-800 hover:bg-white/90 border-2 border-transparent hover:border-purple-200'
+                                                ? 'bg-gray-900 text-white shadow-sm'
+                                                : 'bg-gray-50 text-gray-900 hover:bg-gray-100 border border-gray-200'
                                             }
                                         `}
                                     >
                                         <div className="flex items-center">
                                             <div className={`
-                                                w-6 h-6 rounded-full border-2 mr-4 flex items-center justify-center text-sm font-bold
+                                                w-6 h-6 rounded-full border mr-4 flex items-center justify-center text-sm font-medium
                                                 ${currentQuestion.userAnswer === option
-                                                    ? 'border-white bg-white text-purple-500'
+                                                    ? 'border-white bg-white text-gray-900'
                                                     : 'border-gray-300'
                                                 }
                                             `}>
@@ -328,13 +377,13 @@ export default function QuestionsPage() {
                                 <div className="flex gap-3">
                                     {currentQuestion?.userAnswer && (
                                         <Button
-                                            text="🗑️ Clear Answer"
+                                            text="Clear Answer"
                                             navigator={handleClearAnswer}
                                             variant="outline"
                                         />
                                     )}
                                     <Button
-                                        text="✅ Submit Answer"
+                                        text="Submit Answer"
                                         navigator={handleNext}
                                         variant="success"
                                         disabled={!currentQuestion?.userAnswer}

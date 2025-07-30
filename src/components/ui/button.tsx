@@ -15,13 +15,13 @@ export default function Button({
     disabled = false,
     className = ''
 }: ButtonProps) {
-    const baseClasses = "font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none";
+    const baseClasses = "font-medium rounded-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none";
 
     const variants = {
-        primary: "gradient-primary text-white shadow-lg hover:shadow-xl focus:ring-blue-500",
-        secondary: "gradient-secondary text-white shadow-lg hover:shadow-xl focus:ring-pink-500",
-        success: "gradient-success text-white shadow-lg hover:shadow-xl focus:ring-cyan-500",
-        outline: "bg-transparent border-2 border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white focus:ring-purple-500"
+        primary: "bg-gray-900 text-white shadow-sm hover:shadow-md focus:ring-gray-500",
+        secondary: "bg-gray-600 text-white shadow-sm hover:shadow-md focus:ring-gray-400",
+        success: "bg-gray-800 text-white shadow-sm hover:shadow-md focus:ring-gray-500",
+        outline: "bg-transparent border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white focus:ring-gray-500"
     };
 
     const sizes = {
